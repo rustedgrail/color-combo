@@ -1,5 +1,8 @@
 import {Component} from 'angular2/core';
+import {OnInit} from 'angular2/core';
+
 import {Color} from './color';
+import {ColorService} from './color.service';
 import {ColorDetailComponent} from './color-detail.component';
 
 @Component({
@@ -65,12 +68,13 @@ import {ColorDetailComponent} from './color-detail.component';
       border-radius: 4px 0px 0px 4px;
     }
   `],
-  directives: [ColorDetailComponent]
+  directives: [ColorDetailComponent],
+  providers: [ColorService]
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   public title = 'Color Combo'
-  public colors = COLORS;
+  public colors: Color[];
   public selectedColor: Color;
   public color: Color = {
     id: 1,
@@ -78,11 +82,13 @@ export class AppComponent {
     rgb: "#FF0000"
   }
 
-  onSelect(color: Color) { this.selectedColor = color; }
-}
+  constructor(private _colorService: ColorService) { }
+  ngOnInit() {
+    this.getColors();
+  }
 
-var COLORS: Color[] = [
-  { id: 10, name: 'blue', rgb: '#0000FF' },
-  { id: 11, name: 'green', rgb: '#00FF00' },
-  { id: 12, name: 'white', rgb: '#FFFFFF' }
-]
+  onSelect(color: Color) { this.selectedColor = color; }
+  getColors() {
+    this._colorService.getColors().then(colors => this.colors = colors);
+  }
+}
